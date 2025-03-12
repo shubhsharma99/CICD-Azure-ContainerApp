@@ -1,0 +1,14 @@
+# Ignore Docker container files
+*.log
+*.pid
+*.sock
+*.out
+*.err
+.env
+node_modules/
+docker-compose.override.yml
+
+# Ignore Docker images & containers
+**/Dockerfile~
+**/docker-compose.yml~
+**/docker-compose.override.yml~
