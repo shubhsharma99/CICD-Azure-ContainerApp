@@ -1,0 +1,42 @@
+name: Deploy to Azure Container Apps
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main  
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v2
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        client-id: ${{ secrets.AZURE_CLIENT_ID }}
+        client-secret: ${{ secrets.AZURE_CLIENT_SECRET }}
+        tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+
+    - name: Build Docker image
+      run: |
+        docker build -t ${{ secrets.AZURE_CONTAINER_APP_NAME }} .
+        docker tag ${{ secrets.AZURE_CONTAINER_APP_NAME }} ${{ secrets.AZURE_CONTAINER_APP_NAME }}:latest
+
+    - name: Push Docker image to Azure Container Registry
+      run: |
+        docker login ${{ secrets.AZURE_CONTAINER_REGISTRY }} -u ${{ secrets.AZURE_CLIENT_ID }} -p ${{ secrets.AZURE_CLIENT_SECRET }}
+        docker push ${{ secrets.AZURE_CONTAINER_APP_NAME }}:latest
+
+    - name: Deploy to Azure Container Apps
+      uses: azure/azure-containerapps-deploy@v1
+      with:
+        app-name: ${{ secrets.AZURE_CONTAINER_APP_NAME }}
+        resource-group: ${{ secrets.AZURE_RESOURCE_GROUP }}
+        image: ${{ secrets.AZURE_CONTAINER_APP_NAME }}:latest
+        environment-id: /subscriptions/${{ secrets.AZURE_SUBSCRIPTION_ID }}/resourceGroups/${{ secrets.AZURE_RESOURCE_GROUP }}/providers/Microsoft.App/managedEnvironments/myContainerAppEnv
