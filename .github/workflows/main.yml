@@ -3,7 +3,7 @@ name: Deploy to Azure Container Apps
 on:
   push:
     branches:
-      - main  # Trigger deployment on push to the main branch
+      - main  # Deploy when code is pushed to the main branch
 
 jobs:
   deploy:
@@ -35,3 +35,4 @@ jobs:
             --name ${{ secrets.CONTAINER_APP_NAME }} \
             --resource-group ${{ secrets.RESOURCE_GROUP }} \
             --image ${{ secrets.ACR_NAME }}.azurecr.io/my-app:latest
+
