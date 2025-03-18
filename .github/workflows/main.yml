@@ -18,6 +18,12 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
+      # 🔹 Login to Azure
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+
       - name: Docker Login to Azure Container Registry
         uses: azure/docker-login@v1
         with:
@@ -33,7 +39,7 @@ jobs:
           tags: ${{ secrets.AZURE_URL }}/my-container-app:${{ github.sha }}
           file: ./Dockerfile
 
-      # Deploy the container app
+      # 🔹 Deploy the container app
       - name: Deploy Container App
         uses: azure/container-apps-deploy-action@v0
         with:
